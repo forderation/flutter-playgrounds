@@ -5,6 +5,12 @@ import './widgets/new_transaction.dart';
 import './widgets/chart.dart';
 
 void main() {
+  // Use this for force orientation
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitUp,
+  //   DeviceOrientation.portraitDown,
+  // ]);
   runApp(MyApp());
 }
 
@@ -44,14 +50,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePage extends State<MyHomePage> {
   final List<Transaction> userTransaction = [
-    // Transaction(id: 't1', amount: 99.65, date: DateTime.now(), title: 'Shoes'),
-    // Transaction(id: 't2', amount: 78.99, date: DateTime.now(), title: 'Shirt'),
+    Transaction(id: 't1', amount: 99.65, date: DateTime.now(), title: 'Shoes'),
+    Transaction(id: 't2', amount: 78.99, date: DateTime.now(), title: 'Shirt'),
   ];
+
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return userTransaction.where((element) {
       return element.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
     }).toList();
+  }
+
+  void _setShowChart() {
+    setState(() {
+      _showChart = !_showChart;
+    });
   }
 
   void _addUserTransaction(
@@ -68,9 +82,11 @@ class _MyHomePage extends State<MyHomePage> {
 
   void _startNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
+        isScrollControlled: true,
         context: ctx,
-        builder: (_) {
-          return NewTransaction(_addUserTransaction);
+        builder: (builderContext) {
+          return SingleChildScrollView(
+              child: NewTransaction(_addUserTransaction));
         });
   }
 
@@ -89,25 +105,51 @@ class _MyHomePage extends State<MyHomePage> {
       actions: [
         IconButton(
             icon: Icon(Icons.add),
-            onPressed: () => _startNewTransaction(context))
+            onPressed: () => _startNewTransaction(context)),
+        Row(
+          children: [
+            GestureDetector(
+              child: Text(
+                'Show chart',
+                style: Theme.of(context).textTheme.button,
+              ),
+              onTap: _setShowChart,
+            ),
+            Switch(
+              value: _showChart,
+              onChanged: (bool _) {
+                _setShowChart();
+              },
+            )
+          ],
+        ),
       ],
     );
     final heightAvailable = MediaQuery.of(context).size.height -
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top;
+    final isPotrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           children: [
+            _showChart
+                ? Container(
+                    height: isPotrait
+                        ? heightAvailable * 0.3
+                        : heightAvailable * 0.7,
+                    child: Chart(_recentTransactions),
+                  )
+                : Padding(padding: EdgeInsets.all(5)),
             Container(
-              height: heightAvailable * 0.4,
-              child: Chart(_recentTransactions),
-            ),
-            Container(
+              width: MediaQuery.of(context).size.width,
               child:
                   TransactionList(userTransaction, _deleteTransactionFromList),
-              height: heightAvailable * 0.6,
+              height: _showChart
+                  ? isPotrait ? heightAvailable * 0.7 : heightAvailable * 0.3
+                  : heightAvailable * 1,
             )
           ],
         ),

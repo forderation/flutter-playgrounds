@@ -50,7 +50,17 @@ class _NewTransactionState extends State<NewTransaction> {
         height: MediaQuery.of(context).size.height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width * 1,
+              padding: EdgeInsets.only(bottom: 20),
+              child: Text(
+                'Create New Transaction',
+                style: Theme.of(context).textTheme.headline6,
+                textAlign: TextAlign.center,
+              ),
+            ),
             TextField(
               decoration: InputDecoration(labelText: 'Title'),
               controller: _titleController,
@@ -83,13 +93,24 @@ class _NewTransactionState extends State<NewTransaction> {
                 ],
               ),
             ),
-            RaisedButton(
-              color: Theme.of(context).primaryColor,
-              onPressed: () {
-                _submitHandler();
-              },
-              child:
-                  Text('Add Price', style: Theme.of(context).textTheme.button),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: Theme.of(context).primaryColor),
+                    )),
+                RaisedButton(
+                  color: Theme.of(context).primaryColor,
+                  onPressed: () {
+                    _submitHandler();
+                  },
+                  child: Text('Add Price',
+                      style: Theme.of(context).textTheme.button),
+                ),
+              ],
             )
           ],
         ),
