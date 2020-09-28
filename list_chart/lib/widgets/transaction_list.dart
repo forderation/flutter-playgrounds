@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import './transaction_item.dart';
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
@@ -33,27 +33,7 @@ class TransactionList extends StatelessWidget {
             itemCount: transactions.length,
             itemBuilder: (context, index) {
               final tx = transactions[index];
-              return Card(
-                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  elevation: 5,
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      child: Padding(
-                        padding: EdgeInsets.all(6),
-                        child: FittedBox(
-                          child: Text('\$${tx.amount}'),
-                        ),
-                      ),
-                    ),
-                    title: Text(tx.title,
-                        style: Theme.of(context).textTheme.headline6),
-                    subtitle: Text(DateFormat.yMMMd().format(tx.date)),
-                    trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        color: Theme.of(context).errorColor,
-                        onPressed: () => deleteTransaction(tx.id)),
-                  ));
+              return TransactionItem(tx, deleteTransaction);
             });
   }
 }

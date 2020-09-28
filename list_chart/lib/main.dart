@@ -98,6 +98,7 @@ class _MyHomePage extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     final appBar = AppBar(
       title: Text(
         'Flutter App',
@@ -115,7 +116,8 @@ class _MyHomePage extends State<MyHomePage> {
               ),
               onTap: _setShowChart,
             ),
-            Switch(
+            // adjust switch button based on OS
+            Switch.adaptive(
               value: _showChart,
               onChanged: (bool _) {
                 _setShowChart();
@@ -125,33 +127,34 @@ class _MyHomePage extends State<MyHomePage> {
         ),
       ],
     );
-    final heightAvailable = MediaQuery.of(context).size.height -
+    final heightAvailable = mediaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
-    final isPotrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
+        mediaQuery.padding.top;
+    final isPotrait = mediaQuery.orientation == Orientation.portrait;
     return Scaffold(
       appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _showChart
-                ? Container(
-                    height: isPotrait
-                        ? heightAvailable * 0.3
-                        : heightAvailable * 0.7,
-                    child: Chart(_recentTransactions),
-                  )
-                : Padding(padding: EdgeInsets.all(5)),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child:
-                  TransactionList(userTransaction, _deleteTransactionFromList),
-              height: _showChart
-                  ? isPotrait ? heightAvailable * 0.7 : heightAvailable * 0.3
-                  : heightAvailable * 1,
-            )
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _showChart
+                  ? Container(
+                      height: isPotrait
+                          ? heightAvailable * 0.3
+                          : heightAvailable * 0.7,
+                      child: Chart(_recentTransactions),
+                    )
+                  : Padding(padding: EdgeInsets.all(5)),
+              Container(
+                width: mediaQuery.size.width,
+                child: TransactionList(
+                    userTransaction, _deleteTransactionFromList),
+                height: _showChart
+                    ? isPotrait ? heightAvailable * 0.7 : heightAvailable * 0.3
+                    : heightAvailable * 1,
+              )
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

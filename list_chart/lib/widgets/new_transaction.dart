@@ -43,17 +43,18 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     return Card(
       elevation: 5,
       child: Container(
         padding: EdgeInsets.all(10),
-        height: MediaQuery.of(context).size.height,
+        height: mediaQuery.size.height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              width: MediaQuery.of(context).size.width * 1,
+              width: mediaQuery.size.width * 1,
               padding: EdgeInsets.only(bottom: 20),
               child: Text(
                 'Create New Transaction',
