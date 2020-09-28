@@ -5,7 +5,9 @@ class ChartBar extends StatelessWidget {
   final double spendingAmount;
   final double spendingPctOfTotal;
 
-  ChartBar(
+  //NOTE: use const of front constructor when all properties are final
+  // this takes litle bit increased performance
+  const ChartBar(
       {@required this.label,
       @required this.spendingAmount,
       @required this.spendingPctOfTotal});
@@ -35,12 +37,15 @@ class ChartBar extends StatelessWidget {
                       color: Color.fromRGBO(220, 220, 220, 1),
                       borderRadius: BorderRadius.circular(10)),
                 ),
-                FractionallySizedBox(
-                  heightFactor: spendingPctOfTotal,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(10)),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: FractionallySizedBox(
+                    heightFactor: spendingPctOfTotal,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
                 )
               ],

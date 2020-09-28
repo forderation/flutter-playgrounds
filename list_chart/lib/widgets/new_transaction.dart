@@ -63,7 +63,7 @@ class _NewTransactionState extends State<NewTransaction> {
               ),
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: const InputDecoration(labelText: 'Title'),
               controller: _titleController,
               onSubmitted: (_) => _submitHandler(),
             ),
