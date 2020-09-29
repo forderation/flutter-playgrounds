@@ -6,7 +6,7 @@ class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
   final Function deleteTransaction;
 
-  TransactionList(this.transactions, this.deleteTransaction);
+  const TransactionList(this.transactions, this.deleteTransaction);
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +32,10 @@ class TransactionList extends StatelessWidget {
         : ListView.builder(
             itemCount: transactions.length,
             itemBuilder: (context, index) {
-              final tx = transactions[index];
-              return TransactionItem(tx, deleteTransaction);
+              return TransactionItem(
+                  key: ValueKey(transactions[index].id),
+                  tx: transactions[index],
+                  deleteFunction: deleteTransaction);
             });
   }
 }

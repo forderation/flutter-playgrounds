@@ -48,7 +48,6 @@ class _NewTransactionState extends State<NewTransaction> {
       elevation: 5,
       child: Container(
         padding: EdgeInsets.all(10),
-        height: mediaQuery.size.height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -68,7 +67,7 @@ class _NewTransactionState extends State<NewTransaction> {
               onSubmitted: (_) => _submitHandler(),
             ),
             TextField(
-              decoration: InputDecoration(labelText: 'Amout'),
+              decoration: const InputDecoration(labelText: 'Amout'),
               controller: _amountController,
               // to make sure that can be run on ios use below
               keyboardType: TextInputType.numberWithOptions(decimal: true),

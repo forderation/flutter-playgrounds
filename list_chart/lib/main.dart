@@ -48,7 +48,7 @@ class MyHomePage extends StatefulWidget {
   }
 }
 
-class _MyHomePage extends State<MyHomePage> {
+class _MyHomePage extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Transaction> userTransaction = [
     Transaction(id: 't1', amount: 99.65, date: DateTime.now(), title: 'Shoes'),
     Transaction(id: 't2', amount: 78.99, date: DateTime.now(), title: 'Shirt'),
@@ -68,6 +68,25 @@ class _MyHomePage extends State<MyHomePage> {
     });
   }
 
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Go here to listen lifecyle from state
+    print('What\'s happen? $state');
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   void _addUserTransaction(
       String txTitle, double txAmount, DateTime choosenDate) {
     final txUser = new Transaction(
@@ -84,9 +103,14 @@ class _MyHomePage extends State<MyHomePage> {
     showModalBottomSheet(
         isScrollControlled: true,
         context: ctx,
+        // Update flutter with build you can get height screen available actual to your apps
         builder: (builderContext) {
           return SingleChildScrollView(
-              child: NewTransaction(_addUserTransaction));
+              child: Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: NewTransaction(_addUserTransaction),
+          ));
         });
   }
 
@@ -96,17 +120,26 @@ class _MyHomePage extends State<MyHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final appBar = AppBar(
+  Widget buildListTransaction(
+      MediaQueryData mediaQuery, bool isPotrait, double heightAvailable) {
+    return Container(
+      width: mediaQuery.size.width,
+      child: TransactionList(userTransaction, _deleteTransactionFromList),
+      height: _showChart
+          ? isPotrait ? heightAvailable * 0.7 : heightAvailable * 0.3
+          : heightAvailable * 1,
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
       title: Text(
         'Flutter App',
       ),
       actions: [
-        IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startNewTransaction(context)),
+        // IconButton(
+        //     icon: Icon(Icons.add),
+        //     onPressed: () => _startNewTransaction(context)),
         Row(
           children: [
             GestureDetector(
@@ -127,10 +160,16 @@ class _MyHomePage extends State<MyHomePage> {
         ),
       ],
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isPotrait = mediaQuery.orientation == Orientation.portrait;
+    final appBar = buildAppBar();
     final heightAvailable = mediaQuery.size.height -
         appBar.preferredSize.height -
         mediaQuery.padding.top;
-    final isPotrait = mediaQuery.orientation == Orientation.portrait;
     return Scaffold(
       appBar: appBar,
       body: SafeArea(
@@ -145,14 +184,7 @@ class _MyHomePage extends State<MyHomePage> {
                       child: Chart(_recentTransactions),
                     )
                   : Padding(padding: EdgeInsets.all(5)),
-              Container(
-                width: mediaQuery.size.width,
-                child: TransactionList(
-                    userTransaction, _deleteTransactionFromList),
-                height: _showChart
-                    ? isPotrait ? heightAvailable * 0.7 : heightAvailable * 0.3
-                    : heightAvailable * 1,
-              )
+              buildListTransaction(mediaQuery, isPotrait, heightAvailable)
             ],
           ),
         ),
