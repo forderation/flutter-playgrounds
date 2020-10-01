@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/products.dart';
 import '../providers/product.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 
 class EditProductsScrenn extends StatefulWidget {
   static const ROUTE_NAME = '/edit-products';
@@ -25,6 +26,7 @@ class _EditProductsScrennState extends State<EditProductsScrenn> {
     'imageUrl': '',
   };
   var _isInit = true;
+  var _isLoading = false;
 
   var _existProduct =
       Product(id: null, title: '', description: '', imageUrl: '', price: 0);
@@ -82,13 +84,39 @@ class _EditProductsScrennState extends State<EditProductsScrenn> {
     final formValid = _form.currentState.validate();
     if (!formValid) return;
     _form.currentState.save();
+    setState(() {
+      _isLoading = true;
+    });
     if (_existProduct.id == null) {
-      Provider.of<Products>(context, listen: false).addProduct(_existProduct);
+      Provider.of<Products>(context, listen: false)
+          .addProduct(_existProduct)
+          .catchError((error) {
+        return showDialog<Null>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('An error occurred!'),
+            content: Text('Something went wrong. 😌'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              )
+            ],
+          ),
+        );
+      }).then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      });
     } else {
       Provider.of<Products>(context, listen: false)
           .updateProduct(_existProduct.id, _existProduct);
+      Navigator.of(context).pop();
     }
-    Navigator.of(context).pop();
   }
 
   void _onSaveField<T>(T val, FormFields field) {
@@ -151,81 +179,88 @@ class _EditProductsScrennState extends State<EditProductsScrenn> {
         title: Text('Edit Product'),
         actions: [IconButton(icon: Icon(Icons.save), onPressed: _saveForm)],
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _form,
-          child: ListView(
-            children: [
-              TextFormField(
-                  initialValue: _initValue['title'],
-                  decoration: InputDecoration(labelText: 'Title'),
-                  textInputAction: TextInputAction.next,
-                  onFieldSubmitted: (_) =>
-                      FocusScope.of(context).requestFocus(_priceFocusNode),
-                  onSaved: (val) => _onSaveField(val, FormFields.Title),
-                  validator: (val) =>
-                      val.isEmpty ? 'Please input valid title' : null),
-              TextFormField(
-                  initialValue: _initValue['price'],
-                  decoration: InputDecoration(labelText: 'Price'),
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.number,
-                  focusNode: _priceFocusNode,
-                  onFieldSubmitted: (_) => FocusScope.of(context)
-                      .requestFocus(_descriptionFocusNode),
-                  onSaved: (val) => _onSaveField(val, FormFields.Price),
-                  validator: (val) => double.tryParse(val) == null
-                      ? 'Please input valid price number'
-                      : double.parse(val) <= 0
-                          ? 'Please input price number greater than zero'
-                          : null),
-              TextFormField(
-                  initialValue: _initValue['description'],
-                  decoration: InputDecoration(labelText: 'Description'),
-                  maxLines: 3,
-                  keyboardType: TextInputType.multiline,
-                  focusNode: _descriptionFocusNode,
-                  onSaved: (val) => _onSaveField(val, FormFields.Description),
-                  validator: (val) => val.length <= 6
-                      ? 'Description length must be more than 6'
-                      : null),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    margin: EdgeInsets.only(top: 10, right: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey)),
-                    child: _imageUrlController.text.isEmpty
-                        ? Text(
-                            'Enter Image Url',
-                          )
-                        : FittedBox(
-                            child: Image.network(_imageUrlController.text),
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                  Expanded(
-                      // NOTE: if we set init value together with controller it could be throw error
-                      child: TextFormField(
-                    decoration: InputDecoration(labelText: 'Image URL'),
-                    keyboardType: TextInputType.url,
-                    controller: _imageUrlController,
-                    onSaved: (val) => _onSaveField(val, FormFields.ImageUrl),
-                    textInputAction: TextInputAction.done,
-                    focusNode: _imageUrlFocusNode,
-                    onFieldSubmitted: (_) => _saveForm,
-                    validator: (val) => imageValidator(val),
-                  ))
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _form,
+                child: ListView(
+                  children: [
+                    TextFormField(
+                        initialValue: _initValue['title'],
+                        decoration: InputDecoration(labelText: 'Title'),
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (_) => FocusScope.of(context)
+                            .requestFocus(_priceFocusNode),
+                        onSaved: (val) => _onSaveField(val, FormFields.Title),
+                        validator: (val) =>
+                            val.isEmpty ? 'Please input valid title' : null),
+                    TextFormField(
+                        initialValue: _initValue['price'],
+                        decoration: InputDecoration(labelText: 'Price'),
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.number,
+                        focusNode: _priceFocusNode,
+                        onFieldSubmitted: (_) => FocusScope.of(context)
+                            .requestFocus(_descriptionFocusNode),
+                        onSaved: (val) => _onSaveField(val, FormFields.Price),
+                        validator: (val) => double.tryParse(val) == null
+                            ? 'Please input valid price number'
+                            : double.parse(val) <= 0
+                                ? 'Please input price number greater than zero'
+                                : null),
+                    TextFormField(
+                        initialValue: _initValue['description'],
+                        decoration: InputDecoration(labelText: 'Description'),
+                        maxLines: 3,
+                        keyboardType: TextInputType.multiline,
+                        focusNode: _descriptionFocusNode,
+                        onSaved: (val) =>
+                            _onSaveField(val, FormFields.Description),
+                        validator: (val) => val.length <= 6
+                            ? 'Description length must be more than 6'
+                            : null),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          margin: EdgeInsets.only(top: 10, right: 10),
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.grey)),
+                          child: _imageUrlController.text.isEmpty
+                              ? Text(
+                                  'Enter Image Url',
+                                )
+                              : FittedBox(
+                                  child:
+                                      Image.network(_imageUrlController.text),
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                        Expanded(
+                            // NOTE: if we set init value together with controller it could be throw error
+                            child: TextFormField(
+                          decoration: InputDecoration(labelText: 'Image URL'),
+                          keyboardType: TextInputType.url,
+                          controller: _imageUrlController,
+                          onSaved: (val) =>
+                              _onSaveField(val, FormFields.ImageUrl),
+                          textInputAction: TextInputAction.done,
+                          focusNode: _imageUrlFocusNode,
+                          onFieldSubmitted: (_) => _saveForm,
+                          validator: (val) => imageValidator(val),
+                        ))
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }
