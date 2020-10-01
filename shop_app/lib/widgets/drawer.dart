@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
+import '../screens/user_products_screen.dart';
 
-enum SelectedDrawer { Products, Orders }
+enum SelectedDrawer { Products, Orders, ManageProducts }
 
 class SideDrawer extends StatelessWidget {
   final SelectedDrawer posSelect;
@@ -58,6 +59,8 @@ class SideDrawer extends StatelessWidget {
               ProductsOverviewScreen.ROUTE_NAME, context),
           buildMenuDrawer('Orders', SelectedDrawer.Orders,
               Icons.shopping_basket, OrderScreen.ROUTE_NAME, context),
+          buildMenuDrawer('Manage Products', SelectedDrawer.ManageProducts,
+              Icons.list, UserProductsScreen.ROUTE_NAME, context),
         ],
       ),
     );

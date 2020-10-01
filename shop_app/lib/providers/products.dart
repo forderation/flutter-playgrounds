@@ -51,7 +51,7 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  List<Product> get allItems {
+  List<Product> get items {
     // if (_showFavOnly) {
     //   return [..._items.where((productItem) => productItem.isFavorite)];
     // }
@@ -64,5 +64,29 @@ class Products with ChangeNotifier {
 
   Product findById(String id) {
     return _items.firstWhere((element) => element.id == id);
+  }
+
+  void addProduct(Product product) {
+    final newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        imageUrl: product.imageUrl,
+        description: product.description,
+        price: product.price);
+    _items.add(newProduct);
+    notifyListeners();
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((element) => element.id == id);
+    if (prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    }
+  }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((element) => element.id == id);
+    notifyListeners();
   }
 }
