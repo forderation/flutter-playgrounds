@@ -24,7 +24,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _isInit = true;
   var _isLoading = false;
 
-  initDepedencies(Function callbackDepent) async {
+  Future<void> initDepedencies(Function callbackDepent) async {
     if (_isInit) {
       setState(() {
         _isLoading = true;

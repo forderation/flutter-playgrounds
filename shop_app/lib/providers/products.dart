@@ -115,10 +115,23 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product updatedProduct) async {
     final prodIndex = _items.indexWhere((element) => element.id == id);
     if (prodIndex >= 0) {
-      _items[prodIndex] = newProduct;
+      final url =
+          'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json';
+      try {
+        await http.patch(url,
+            body: json.encode({
+              'title': updatedProduct.title,
+              'price': updatedProduct.price,
+              'description': updatedProduct.description,
+              'imageUrl': updatedProduct.imageUrl,
+            }));
+      } catch (err) {
+        throw err;
+      }
+      _items[prodIndex] = updatedProduct;
       notifyListeners();
     }
   }

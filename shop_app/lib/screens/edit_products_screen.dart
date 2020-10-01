@@ -91,21 +91,8 @@ class _EditProductsScrennState extends State<EditProductsScrenn> {
         await Provider.of<Products>(context, listen: false)
             .addProduct(_existProduct);
       } catch (error) {
-        await showDialog<Null>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('An error occurred!'),
-            content: Text('Something went wrong. 😌'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
-        );
+        await errorDialog(
+            'Something went wrong when create data 😌 please try again');
       } finally {
         setState(() {
           _isLoading = false;
@@ -113,10 +100,34 @@ class _EditProductsScrennState extends State<EditProductsScrenn> {
         Navigator.of(context).pop();
       }
     } else {
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_existProduct.id, _existProduct);
-      Navigator.of(context).pop();
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .updateProduct(_existProduct.id, _existProduct);
+      } catch (error) {
+        await errorDialog(
+            'Something went wrong when update data 😌 please try again');
+      } finally {
+        Navigator.of(context).pop();
+      }
     }
+  }
+
+  Future<void> errorDialog(String message) async {
+    await showDialog<Null>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('An error occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
   }
 
   void _onSaveField<T>(T val, FormFields field) {
