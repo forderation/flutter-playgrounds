@@ -68,19 +68,18 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> addProduct(Product product) {
-    const url = 'https://mandor-pulsa-odqply.firebaseio.com/products.json';
+  Future<void> addProduct(Product product) async {
+    const url = 'https://mandor-pulsa-odqply.firebaseio.com/products';
     // NOTE: with returning http.post, block method inside then assume executed
-    return http
-        .post(url,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'imageUrl': product.imageUrl,
-              'price': product.price,
-              'isFavorite': product.isFavorite,
-            }))
-        .then((response) {
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavorite': product.isFavorite,
+          }));
       final newProduct = Product(
           id: json.decode(response.body)['names'],
           title: product.title,
@@ -89,10 +88,10 @@ class Products with ChangeNotifier {
           price: product.price);
       _items.add(newProduct);
       notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       print(error);
       throw error;
-    });
+    }
   }
 
   void updateProduct(String id, Product newProduct) {
