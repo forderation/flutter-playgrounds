@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../models/http-error.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +20,19 @@ class Product with ChangeNotifier {
       // default init
       this.isFavorite = false});
 
-  void toggleFavorite() {
-    isFavorite = !isFavorite;
+  Future<void> toggleFavorite() async {
+    final url = 'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json';
+    final oldStatus = isFavorite;
+    isFavorite = !oldStatus;
     notifyListeners();
+    final response = await http.patch(url,
+        body: json.encode({
+          'isFavorite': !oldStatus,
+        }));
+    if (response.statusCode >= 400) {
+      isFavorite = oldStatus;
+      notifyListeners();
+      throw HttpError('Something wrong to change favorite status');
+    }
   }
 }

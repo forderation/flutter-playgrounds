@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/providers/cart.dart';
-import 'package:shop_app/providers/product.dart';
-import 'package:shop_app/screens/products_detail_screen.dart';
+import '../providers/cart.dart';
+import '../providers/product.dart';
+import '../providers/products.dart';
+import '../screens/products_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
+  void showSnackBar(BuildContext context, String message) {
+    Scaffold.of(context).hideCurrentSnackBar();
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: Duration(seconds: 2),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     // NOTE: go for listen false if there is no something data to update
@@ -37,8 +46,16 @@ class ProductItem extends StatelessWidget {
                   color: Theme.of(context).accentColor,
                 ),
               ),
-              onPressed: () {
-                product.toggleFavorite();
+              onPressed: () async {
+                try {
+                  final messageBar = product.isFavorite
+                      ? 'Item remove from favorite'
+                      : 'Item added to favorite';
+                  await product.toggleFavorite();
+                  showSnackBar(context, messageBar);
+                } catch (err) {
+                  showSnackBar(context, err.toString());
+                }
               }),
           title: Text(
             product.title,
