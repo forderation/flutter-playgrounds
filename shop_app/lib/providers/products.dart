@@ -104,8 +104,9 @@ class Products with ChangeNotifier {
             'price': product.price,
             'isFavorite': product.isFavorite,
           }));
+      print('response ${json.decode(response.body)}');
       final newProduct = Product(
-          id: json.decode(response.body)['names'],
+          id: json.decode(response.body)['name'],
           title: product.title,
           imageUrl: product.imageUrl,
           description: product.description,
