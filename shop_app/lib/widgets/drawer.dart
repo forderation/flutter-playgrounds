@@ -67,6 +67,7 @@ class SideDrawer extends StatelessWidget {
           InkWell(
             onTap: () {
               Navigator.of(context).pop();
+              Navigator.of(context).pushReplacementNamed('/');
               Provider.of<Auth>(context, listen: false).logout();
             },
             splashColor: Theme.of(context).primaryColor,
