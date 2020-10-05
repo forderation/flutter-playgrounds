@@ -54,6 +54,10 @@ class Products with ChangeNotifier {
   //   notifyListeners();
   // }
 
+  final String authToken;
+
+  Products(this.authToken, this._items);
+
   List<Product> get items {
     // if (_showFavOnly) {
     //   return [..._items.where((productItem) => productItem.isFavorite)];
@@ -70,7 +74,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url = 'https://mandor-pulsa-odqply.firebaseio.com/products.json';
+    final url =
+        'https://mandor-pulsa-odqply.firebaseio.com/products.json?auth=$authToken';
     _items = [];
     try {
       final response = await http.get(url);
@@ -93,7 +98,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url = 'https://mandor-pulsa-odqply.firebaseio.com/products.json';
+    final url =
+        'https://mandor-pulsa-odqply.firebaseio.com/products.json?auth=$authToken';
     // NOTE: with returning http.post, block method inside then assume executed
     try {
       final response = await http.post(url,
@@ -122,7 +128,7 @@ class Products with ChangeNotifier {
     final prodIndex = _items.indexWhere((element) => element.id == id);
     if (prodIndex >= 0) {
       final url =
-          'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json';
+          'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json?auth=$authToken';
       try {
         await http.patch(url,
             body: json.encode({
@@ -146,7 +152,7 @@ class Products with ChangeNotifier {
     notifyListeners();
     if (existingIndex >= 0) {
       final url =
-          'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json';
+          'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json?auth=$authToken';
       final response = await http.delete(url);
       print(response.statusCode);
       if (response.statusCode >= 400) {

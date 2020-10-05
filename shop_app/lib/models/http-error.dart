@@ -4,7 +4,6 @@ class HttpError implements Exception {
 
   @override
   String toString() {
-    // TODO: implement toString
     // return super.toString();
     return message;
   }
