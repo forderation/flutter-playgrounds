@@ -55,8 +55,9 @@ class Products with ChangeNotifier {
   // }
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     // if (_showFavOnly) {
@@ -73,22 +74,29 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url =
-        'https://mandor-pulsa-odqply.firebaseio.com/products.json?auth=$authToken';
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
+    var url =
+        'https://mandor-pulsa-odqply.firebaseio.com/products.json?auth=$authToken&$filterString';
     _items = [];
     try {
       final response = await http.get(url);
       final dataResponse = json.decode(response.body) as Map<String, dynamic>;
       if (dataResponse != null) {
-        dataResponse.forEach((key, value) {
+        url =
+            'https://mandor-pulsa-odqply.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+        final favResponse = await http.get(url);
+        final favData = json.decode(favResponse.body);
+        dataResponse.forEach((prodId, value) {
           _items.add(Product(
-              id: key,
+              id: prodId,
               title: value['title'],
               description: value['description'],
               price: value['price'],
               imageUrl: value['imageUrl'],
-              isFavorite: value['isFavorite']));
+              // NOTE: double question mark is check whether null use exist check else use false
+              isFavorite: favData == null ? false : favData[prodId] ?? false));
         });
         notifyListeners();
       }
@@ -108,7 +116,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
+            'creatorId': userId
           }));
       print('response ${json.decode(response.body)}');
       final newProduct = Product(

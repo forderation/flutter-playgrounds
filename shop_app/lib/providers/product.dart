@@ -20,15 +20,15 @@ class Product with ChangeNotifier {
       // default init
       this.isFavorite = false});
 
-  Future<void> toggleFavorite() async {
-    final url = 'https://mandor-pulsa-odqply.firebaseio.com/products/$id.json';
+  Future<void> toggleFavorite(String token, String userId) async {
+    final url =
+        'https://mandor-pulsa-odqply.firebaseio.com/userFavorites/$userId/$id.json?auth=$token';
     final oldStatus = isFavorite;
     isFavorite = !oldStatus;
     notifyListeners();
-    final response = await http.patch(url,
-        body: json.encode({
-          'isFavorite': !oldStatus,
-        }));
+    // NOTE: using patch for old approatch is good
+    // but in thaht's case to favorite relate on user, use put
+    final response = await http.put(url, body: json.encode(isFavorite));
     if (response.statusCode >= 400) {
       isFavorite = oldStatus;
       notifyListeners();

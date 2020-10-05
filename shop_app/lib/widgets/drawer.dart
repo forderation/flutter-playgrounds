@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
 import '../screens/user_products_screen.dart';
@@ -61,6 +63,25 @@ class SideDrawer extends StatelessWidget {
               Icons.shopping_basket, OrderScreen.ROUTE_NAME, context),
           buildMenuDrawer('Manage Products', SelectedDrawer.ManageProducts,
               Icons.list, UserProductsScreen.ROUTE_NAME, context),
+          Divider(),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).pop();
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+            splashColor: Theme.of(context).primaryColor,
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+              child: ListTile(
+                leading: Icon(Icons.exit_to_app),
+                title: Text(
+                  'Logout',
+                  style: TextStyle(
+                      color: Colors.black54, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

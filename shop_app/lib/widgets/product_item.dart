@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 import '../providers/cart.dart';
 import '../providers/product.dart';
-import '../providers/products.dart';
 import '../screens/products_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
@@ -21,6 +21,7 @@ class ProductItem extends StatelessWidget {
 
     final product = Provider.of<Product>(context, listen: false);
     final cardContainer = Provider.of<Cart>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     print("build / render widget");
 
     return ClipRRect(
@@ -51,7 +52,7 @@ class ProductItem extends StatelessWidget {
                   final messageBar = product.isFavorite
                       ? 'Item remove from favorite'
                       : 'Item added to favorite';
-                  await product.toggleFavorite();
+                  await product.toggleFavorite(authData.token, authData.userId);
                   showSnackBar(context, messageBar);
                 } catch (err) {
                   showSnackBar(context, err.toString());
