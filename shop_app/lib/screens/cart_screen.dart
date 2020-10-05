@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/providers/cart.dart';
 import '../providers/orders.dart';
 import '../providers/cart.dart' show Cart;
-import '../widgets/cart_item.dart';
+import '../widgets/cart_item.dart' as ct;
 
 class CartScreen extends StatelessWidget {
   static const ROUTE_NAME = '/cart';
@@ -39,15 +40,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  FlatButton(
-                    child: Text('ORDER NOW'),
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false)
-                          .addOrder(carts, cart.totalAmount);
-                      cart.clear();
-                    },
-                    textColor: Theme.of(context).primaryColor,
-                  )
+                  OrdersButton(cart: cart, carts: carts)
                 ],
               ),
             ),
@@ -58,7 +51,7 @@ class CartScreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: cart.items.length,
               itemBuilder: (ctx, i) {
-                return CartItem(
+                return ct.CartItem(
                   carts[i].id,
                   cart.items.keys.toList()[i],
                   carts[i].price,
@@ -70,6 +63,45 @@ class CartScreen extends StatelessWidget {
           )
         ],
       ),
+    );
+  }
+}
+
+class OrdersButton extends StatefulWidget {
+  const OrdersButton({
+    Key key,
+    @required this.cart,
+    @required this.carts,
+  }) : super(key: key);
+
+  final Cart cart;
+  final List<CartItem> carts;
+
+  @override
+  _OrdersButtonState createState() => _OrdersButtonState();
+}
+
+class _OrdersButtonState extends State<OrdersButton> {
+  var _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      child: _isLoading ? CircularProgressIndicator() : Text('ORDER NOW'),
+      onPressed: (widget.cart.totalAmount <= 0 || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false)
+                  .addOrder(widget.carts, widget.cart.totalAmount);
+              setState(() {
+                _isLoading = false;
+              });
+              widget.cart.clear();
+            },
+      textColor: Theme.of(context).primaryColor,
     );
   }
 }
