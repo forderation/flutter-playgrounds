@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/helpers/custom_route.dart';
 import '../providers/auth.dart';
 import '../providers/cart.dart';
 import '../providers/product.dart';
@@ -36,7 +37,8 @@ class ProductItem extends StatelessWidget {
             child: Hero(
               tag: product.id,
               child: FadeInImage(
-                placeholder: AssetImage('assets/images/product-placeholder.png'),
+                placeholder:
+                    AssetImage('assets/images/product-placeholder.png'),
                 image: NetworkImage(product.imageUrl),
                 fit: BoxFit.cover,
               ),

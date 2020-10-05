@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/helpers/custom_route.dart';
 import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/widgets/product_grid.dart';
 import '../widgets/badge.dart';
@@ -61,6 +62,8 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               ),
               onPressed: () {
                 Navigator.of(context).pushNamed(CartScreen.ROUTE_NAME);
+                // Navigator.of(context)
+                //     .push(CustomRoute(builder: (cx) => CartScreen()));
               },
             ),
           ),
