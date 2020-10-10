@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter App',
+      title: 'List Chart',
       home: MyHomePage(),
       darkTheme: ThemeData.dark(),
       theme: ThemeData(
